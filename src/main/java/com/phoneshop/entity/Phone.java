@@ -32,7 +32,7 @@ public class Phone {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
