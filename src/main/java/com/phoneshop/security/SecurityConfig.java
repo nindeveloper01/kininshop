@@ -1,9 +1,10 @@
 package com.phoneshop.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -13,9 +14,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.*;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -31,31 +34,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/phones/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
-                // Swagger
-                .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
-                // Admin-only write operations
-                .requestMatchers(HttpMethod.POST, "/api/v1/phones/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/phones/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/phones/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/brands/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/brands/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/brands/**").hasRole("ADMIN")
-                // All other requests require authentication
-                    .requestMatchers("/api/v1/public/**").permitAll() // Example of another public endpoint
-                .anyRequest().authenticated()
-            )
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
 
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/phones/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
+
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/api-docs/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/phones/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/phones/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/phones/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/brands/**").hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
+                )
+
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -80,13 +91,38 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000","https://kininshopui.vercel.app"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "https://kininshopui.vercel.app",
+                "https://*.vercel.app"
+        ));
+
+        config.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "OPTIONS"
+        ));
+
         config.setAllowedHeaders(List.of("*"));
+
+        config.setExposedHeaders(List.of(
+                "Authorization",
+                "Content-Type"
+        ));
+
         config.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }
