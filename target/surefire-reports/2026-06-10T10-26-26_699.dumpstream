@@ -1,0 +1,5 @@
+# Created at 2026-06-10T10:26:26.910
+Boot Manifest-JAR contains absolute paths in classpath 'D:\full-stack\phone-shope\phone-shop-backend\phone-shop\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

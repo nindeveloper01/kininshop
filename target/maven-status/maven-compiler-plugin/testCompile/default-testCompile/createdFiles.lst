@@ -1,0 +1,6 @@
+com\phoneshop\controller\AuthControllerTest.class
+com\phoneshop\repository\PhoneRepositoryIntegrationTest.class
+com\phoneshop\service\OrderServiceTest.class
+com\phoneshop\controller\PhoneControllerTest.class
+com\phoneshop\service\PhoneServiceTest.class
+com\phoneshop\service\AuthServiceTest.class
