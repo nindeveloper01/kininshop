@@ -41,17 +41,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-
                         .requestMatchers(HttpMethod.GET, "/api/v1/phones/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
 
                         .requestMatchers(
+                                "/api/v1/auth/**",
                                 "/swagger-ui/**",
                                 "/api-docs/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/api/v1/upload/**"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/phones/**").hasRole("ADMIN")

@@ -6,12 +6,13 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
 public class OrderResponse {
     private Long id;
-    private Long userId;
+    private UUID userId;
     private String userEmail;
     private List<OrderItemResponse> items;
     private BigDecimal totalPrice;

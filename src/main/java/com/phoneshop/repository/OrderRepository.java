@@ -9,11 +9,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    Page<Order> findByUserId(Long userId, Pageable pageable);
+    Page<Order> findByUserId(UUID userId, Pageable pageable);
 
     // Eagerly fetch items + phones in one query to avoid N+1
     @Query("""

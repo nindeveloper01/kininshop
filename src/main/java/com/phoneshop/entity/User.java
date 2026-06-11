@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -18,18 +20,21 @@ public class User {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Email
     @NotBlank
     @Column(nullable = false, unique = true)
     private String email;
+    @Column(length = 50)
+    private String username;
 
     @NotBlank
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
-
+    @Column(name = "status" )
+    private Boolean status = true;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
