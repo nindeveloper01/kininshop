@@ -20,10 +20,10 @@ public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "brand_id")
     private Long id;
 
-    @NotBlank
-    @Column(nullable = false, unique = true)
+    @Column(name = "brand_name")
     private String name;
 
     @NotBlank
